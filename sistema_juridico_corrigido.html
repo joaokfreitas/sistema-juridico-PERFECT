@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Juridico & Cartorio Online</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a365d;--primary-light:#2c5282;--accent:#e53e3e;--success:#38a169;--warning:#d69e2e;--bg:#0f172a;--bg-card:#1e293b;--bg-hover:#334155;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--r:16px;--rs:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:var(--bg-card);border-right:1px solid var(--border);z-index:100;padding:24px 0;transition:transform .3s}
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo i{font-size:28px;color:var(--accent)}
+.sidebar-logo span{font-size:18px;font-weight:800}
+.sidebar-logo small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.nav-item{display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;color:var(--muted);font-weight:500;font-size:14px}
+.nav-item:hover{background:var(--bg-hover);color:var(--text)}
+.nav-item.active{background:rgba(229,62,62,.1);color:var(--accent);border-left-color:var(--accent)}
+.nav-item i{width:22px;text-align:center;font-size:16px}
+.main-content{margin-left:260px;padding:32px;min-height:100vh}
+.page-header{margin-bottom:28px}
+.page-header h1{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+.page-header p{color:var(--muted);font-size:15px}
+.hidden{display:none!important}
+.card{background:var(--bg-card);border-radius:var(--r);border:1px solid var(--border);padding:24px;margin-bottom:20px;transition:all .2s}
+.card:hover{border-color:var(--primary-light)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+.card-title i{color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;transition:all .2s}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:#c53030;transform:translateY(-1px);box-shadow:0 4px 15px rgba(229,62,62,.3)}
+.btn-secondary{background:var(--primary-light);color:white}
+.btn-secondary:hover{background:var(--primary)}
+.btn-success{background:var(--success);color:white}
+.btn-danger{background:var(--accent);color:white}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:6px 14px;font-size:13px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-control{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;transition:all .2s}
+.form-control:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(229,62,62,.1)}
+textarea.form-control{min-height:100px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.form-row{grid-template-columns:1fr}}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.checkbox-item{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg);border:2px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all .2s;user-select:none;position:relative}
+.checkbox-item:hover{border-color:var(--primary-light)}
+.checkbox-item.active{border-color:var(--success);background:rgba(56,161,105,.1)}
+.checkbox-item i{font-size:16px;color:var(--muted)}
+.checkbox-item.active i{color:var(--success)}
+.checkbox-item span{font-size:13px;font-weight:600}
+.atenuante-actions{display:flex;gap:4px;margin-left:10px;z-index:10}
+.atenuante-actions button{background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 4px;border-radius:4px}
+.atenuante-actions button:hover{color:var(--accent);background:rgba(229,62,62,0.1)}
+.crime-list{max-height:400px;overflow-y:auto}
+.crime-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative}
+.crime-item:hover{border-color:var(--primary-light);background:var(--bg-hover)}
+.crime-item.selected{border-color:var(--accent);background:rgba(229,62,62,.08)}
+.crime-check{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.crime-item.selected .crime-check{background:var(--accent);border-color:var(--accent)}
+.crime-item.selected .crime-check i{color:white;font-size:12px}
+.crime-info{flex:1}
+.crime-name{font-weight:600;font-size:14px;margin-bottom:2px}
+.crime-desc{font-size:12px;color:var(--muted)}
+.crime-penalty{text-align:right;font-size:13px}
+.crime-penalty .pena{color:var(--accent);font-weight:700}
+.crime-penalty .multa{color:var(--warning);font-weight:600;font-size:12px}
+.crime-actions{display:flex;gap:6px;opacity:0;transition:opacity .2s}
+.crime-item:hover .crime-actions{opacity:1}
+.crime-actions button{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:4px;transition:all .2s}
+.crime-actions button:hover{color:var(--accent);background:rgba(229,62,62,.1)}
+.preview-panel{background:var(--bg);border:2px solid var(--border);border-radius:var(--r);padding:24px;position:sticky;top:20px}
+.preview-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.preview-header i{font-size:20px;color:var(--accent)}
+.preview-header h3{font-size:16px;font-weight:700}
+.preview-section{margin-bottom:16px}
+.preview-section h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.preview-section p,.preview-section div{font-size:13px;line-height:1.6}
+.preview-crimes-list{display:flex;flex-direction:column;gap:6px}
+.preview-crime-tag{display:flex;justify-content:space-between;padding:8px 12px;background:var(--bg-card);border-radius:8px;font-size:13px}
+.preview-total{margin-top:20px;padding-top:16px;border-top:2px solid var(--accent)}
+.total-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
+.total-row.final{font-size:18px;font-weight:800;color:var(--accent);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.discount-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--success);margin-top:4px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal{background:var(--bg-card);border-radius:var(--r);border:1px solid var(--border);width:90%;max-width:560px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .3s;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.modal-overlay.active .modal{transform:scale(1)}
+.modal-header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:20px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:var(--bg);color:var(--accent)}
+.modal-body{padding:24px 28px}
+.modal-footer{padding:20px 28px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.cartorio-categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.cartorio-category{background:var(--bg-card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;transition:all .2s}
+.cartorio-category:hover{border-color:var(--primary-light)}
+.cat-header{padding:18px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s}
+.cat-header:hover{background:var(--bg-hover)}
+.cat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.cat-icon.portes{background:rgba(56,161,105,.15);color:var(--success)}
+.cat-icon.casamentos{background:rgba(66,153,225,.15);color:#4299e1}
+.cat-icon.adocao{background:rgba(236,201,75,.15);color:#ecc94b}
+.cat-icon.divorcio{background:rgba(237,100,100,.15);color:#ed6464}
+.cat-info{flex:1}
+.cat-info h3{font-size:15px;font-weight:700}
+.cat-info span{font-size:12px;color:var(--muted)}
+.cat-toggle{color:var(--muted);transition:transform .3s}
+.cat-toggle.open{transform:rotate(180deg)}
+.cat-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.cat-body.open{max-height:800px}
+.cat-body-inner{padding:0 20px 20px}
+.service-item{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;background:var(--bg);border-radius:var(--rs);border:1px solid transparent;cursor:pointer;transition:all .2s}
+.service-item:hover{border-color:var(--primary-light);background:var(--bg-hover)}
+.service-item i{font-size:14px;width:20px;text-align:center}
+.service-item span{font-size:13px;font-weight:500;flex:1}
+.subpage{background:var(--bg-card);border-radius:var(--r);border:1px solid var(--border);padding:24px}
+.subpage-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.subpage-header i{font-size:24px}
+.subpage-header h2{font-size:22px;font-weight:700}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:16px;transition:color .2s}
+.back-btn:hover{color:var(--accent)}
+.data-table-container{width:100%;overflow-x:auto;margin-top:15px;border:1px solid var(--border);border-radius:var(--rs)}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-card)}
+.data-table th{text-align:left;padding:12px 16px;background:var(--bg);color:var(--muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.data-table td{padding:14px 16px;border-bottom:1px solid var(--border);color:var(--text)}
+.data-table tr:hover td{background:var(--bg-hover)}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.status-pendente{background:rgba(214,158,46,.15);color:var(--warning)}
+.status-emandamento{background:rgba(66,153,225,.15);color:#4299e1}
+.status-concluido{background:rgba(56,161,105,.15);color:var(--success)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);padding:20px;text-align:center}
+.stat-value{font-size:32px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--bg-card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+@media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0;padding:20px;padding-top:60px}.mobile-toggle{display:block}.crime-actions{opacity:1!important}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeIn .4s ease forwards}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state i{font-size:48px;margin-bottom:16px;opacity:.3}
+.empty-state p{font-size:14px}
+.tag-input-container{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);min-height:44px;cursor:text}
+.tag-input-container:focus-within{border-color:var(--accent)}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--primary-light);border-radius:6px;font-size:12px;font-weight:500}
+.tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px}
+.tag button:hover{color:var(--accent)}
+.tag-input{background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;flex:1;min-width:80px;outline:none}
+@media print{.sidebar,.mobile-toggle,.btn{display:none!important}.main-content{margin-left:0;padding:0}.preview-panel{position:static;border:2px solid #000}}
+
+#registro-bloqueio {position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+#registro-bloqueio .modal-registro-inicial {background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:32px;width:100%;max-width:480px;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+#registro-bloqueio h2 {font-size:24px;font-weight:800;margin-bottom:8px;text-align:center;}
+#registro-bloqueio p {color:var(--muted);font-size:14px;text-align:center;margin-bottom:24px;}
+.user-profile-badge {display:flex;align-items:center;gap:12px;padding:12px 24px;border-top:1px solid var(--border);margin-top:auto;background:rgba(0,0,0,0.1);}
+.user-profile-badge i {font-size:24px;color:var(--accent);}
+.user-profile-info {display:flex;flex-direction:column;}
+.user-profile-info span {font-size:14px;font-weight:700;}
+.user-profile-info small {font-size:11px;color:var(--muted);}
+
+/* ===== ESTILOS NOVOS PARA BOTOES DE ACAO NA HIERARQUIA ===== */
+.acao-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.acao-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:11px;font-weight:600;transition:all .2s;}
+.acao-btn:hover{transform:translateY(-1px);}
+.acao-btn.promover{border-color:rgba(56,161,105,0.4);color:var(--success);}
+.acao-btn.promover:hover{background:rgba(56,161,105,0.15);border-color:var(--success);}
+.acao-btn.rebaixar{border-color:rgba(214,158,46,0.4);color:var(--warning);}
+.acao-btn.rebaixar:hover{background:rgba(214,158,46,0.15);border-color:var(--warning);}
+.acao-btn.exonerar{border-color:rgba(229,62,62,0.4);color:var(--accent);}
+.acao-btn.exonerar:hover{background:rgba(229,62,62,0.15);border-color:var(--accent);}
+.acao-btn.ver-historico{border-color:rgba(66,153,225,0.4);color:#4299e1;}
+.acao-btn.ver-historico:hover{background:rgba(66,153,225,0.15);border-color:#4299e1;}
+</style>
+</head>
+<body>
+
+<div id="registro-bloqueio">
+    <div class="modal-registro-inicial" id="auth-container">
+        <div id="auth-login-view">
+            <h2><i class="fas fa-shield-halved" style="color:var(--accent); margin-right:8px;"></i>Acesso ao Sistema</h2>
+            <p style="margin-bottom:20px;">Entre com suas credenciais para acessar o painel.</p>
+            <div class="form-group">
+                <label>Seu ID</label>
+                <input type="number" class="form-control" id="login-user-id" placeholder="Ex: 1042">
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;" onclick="efetuarLogin()">
+                <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+            </button>
+            <div style="text-align:center; margin-top:16px; color:var(--muted); font-size:13px;">
+                Nao tem conta? <a href="#" onclick="toggleAuthView('register'); return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Registre-se aqui</a>
+            </div>
+        </div>
+        <div id="auth-register-view" style="display:none;">
+            <h2><i class="fas fa-user-plus" style="color:var(--accent); margin-right:8px;"></i>Novo Registro</h2>
+            <p style="margin-bottom:20px;">Crie sua conta para acessar o sistema.</p>
+            <div class="form-group">
+                <label>Nome na Cidade</label>
+                <input type="text" class="form-control" id="reg-user-nome" placeholder="Seu nome completo">
+            </div>
+            <div class="form-group">
+                <label>Seu ID</label>
+                <input type="number" class="form-control" id="reg-user-id" placeholder="Ex: 1042">
+            </div>
+            <div class="form-group">
+                <label>Cargo Atual</label>
+                <select class="form-control" id="reg-user-cargo">
+                    <option value="Estagiario OAB">Estagiario OAB</option>
+                    <option value="advogado junior">Advogado Junior</option>
+                    <option value="advogado senior">Advogado Senior</option>
+                    <option value="advogado">Advogado</option>
+                    <option value="escrivao">Escrivao</option>
+                    <option value="promotor">Promotor</option>
+                    <option value="juiz">Juiz</option>
+                    <option value="CORREGEDOR">CORREGEDOR</option>
+                    <option value="DIRETORIA TRIBUNAL">DIRETORIA TRIBUNAL</option>
+                    <option value="DESEMBARGADOR">DESEMBARGADOR</option>
+                    <option value="CHEF.DESEMBARGADOR">CHEF.DESEMBARGADOR</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;" onclick="efetuarRegistroInicial()">
+                <i class="fas fa-user-plus"></i> Criar Conta e Entrar
+            </button>
+            <div style="text-align:center; margin-top:16px; color:var(--muted); font-size:13px;">
+                Ja tem conta? <a href="#" onclick="toggleAuthView('login'); return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Faca login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+
+<nav class="sidebar" id="sidebar" style="display:flex; flex-direction:column;">
+<div class="sidebar-logo"><i class="fas fa-scale-balanced"></i><div><span>Justica Digital</span><small>Sistema Juridico & Cartorio</small></div></div>
+<div class="nav-item active" onclick="showPage('calculadora')" data-page="calculadora"><i class="fas fa-gavel"></i><span>Calculadora Penal</span></div>
+<div class="nav-item" onclick="showPage('cartorio')" data-page="cartorio"><i class="fas fa-building-columns"></i><span>Cartorio Online</span></div>
+<div class="nav-item" onclick="showPage('hierarquia')" data-page="hierarquia"><i class="fas fa-sitemap"></i><span>Hierarquia</span></div>
+<div class="nav-item" onclick="showPage('contas')" data-page="contas"><i class="fas fa-users"></i><span>Contas Online</span></div>
+<div class="nav-item" onclick="efetuarLogout()" style="margin-top:auto; border-top:1px solid var(--border); color:var(--muted);"><i class="fas fa-right-from-bracket"></i><span>Sair do Sistema</span></div>
+
+<div class="user-profile-badge" id="user-badge" style="display:none;">
+    <i class="fas fa-user-shield"></i>
+    <div class="user-profile-info">
+        <span id="badge-nome">Nome</span>
+        <small id="badge-cargo">Cargo (ID: 0)</small>
+    </div>
+</div>
+</nav>
+
+<main class="main-content">
+
+<div id="page-calculadora" class="page animate-in">
+<div class="page-header">
+<h1><i class="fas fa-gavel" style="color:var(--accent);margin-right:12px"></i>Calculadora Penal</h1>
+<p>Selecione os crimes cometidos, preencha os dados do acusado e visualize a pena total calculada.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:24px">
+<div>
+<div class="card">
+<div class="card-header"><div class="card-title"><i class="fas fa-user"></i>Dados do Acusado</div></div>
+<div class="form-row">
+<div class="form-group"><label>ID do Acusado</label><input type="text" class="form-control" id="acusado-id" placeholder="Ex: AC-2024-001" oninput="updatePreview()"></div>
+<div class="form-group"><label>Nome Completo</label><input type="text" class="form-control" id="acusado-nome" placeholder="Nome do acusado" oninput="updatePreview()"></div>
+</div>
+<div class="form-group"><label>Descricao do Acontecimento</label><textarea class="form-control" id="acusado-descricao" placeholder="Descreva detalhadamente o ocorrido..." oninput="updatePreview()"></textarea></div>
+<div class="form-group"><label>Itens Apreendidos</label><div class="tag-input-container" id="tag-container" onclick="document.getElementById('tag-input').focus()"><input type="text" class="tag-input" id="tag-input" placeholder="Digite e pressione Enter..." onkeydown="handleTagInput(event)"></div></div>
+</div>
+
+<div class="card">
+<div class="card-header">
+    <div class="card-title"><i class="fas fa-hand-holding-heart"></i>Circunstancias Atenuantes</div>
+    <button class="btn btn-primary btn-sm" onclick="openAtenuanteModal('add')"><i class="fas fa-plus"></i> Criar Atenuante</button>
+</div>
+<div class="checkbox-group" id="atenuantes-container"></div>
+</div>
+
+<div class="card">
+<div class="card-header"><div class="card-title"><i class="fas fa-list"></i>Crimes Cadastrados</div><button class="btn btn-primary btn-sm" onclick="openModal('add')"><i class="fas fa-plus"></i>Adicionar Crime</button></div>
+<div class="crime-list" id="crime-list"></div>
+</div>
+</div>
+
+<div>
+<div class="preview-panel">
+<div class="preview-header"><i class="fas fa-file-contract"></i><h3>Previa da Sentenca</h3></div>
+<div class="preview-section"><h4>Dados do Acusado</h4><div id="preview-id" style="color:var(--muted)">ID: --</div><div id="preview-nome" style="color:var(--muted)">Nome: --</div></div>
+<div class="preview-section"><h4>Ocorrido</h4><p id="preview-descricao" style="color:var(--muted);font-style:italic">Nenhuma descricao informada.</p></div>
+<div class="preview-section"><h4>Itens Apreendidos</h4><div id="preview-itens" style="color:var(--muted)">Nenhum item apreendido.</div></div>
+<div class="preview-section"><h4>Crimes Selecionados</h4><div class="preview-crimes-list" id="preview-crimes"><div style="color:var(--muted);font-style:italic">Nenhum crime selecionado.</div></div></div>
+<div class="preview-section"><h4>Circunstancias</h4><div id="preview-circunstancias" style="color:var(--muted)">Nenhuma circunstancia atenuante.</div></div>
+<div class="preview-total">
+<div class="total-row"><span>Pena Total (bruta)</span><span id="total-pena-bruta">0 meses</span></div>
+<div class="total-row"><span>Multa Total (bruta)</span><span id="total-multa-bruta">R$ 0,00</span></div>
+<div class="total-row" id="row-desconto" style="display:none"><span>Desconto Atenuante</span><span id="total-desconto" style="color:var(--success)">-0%</span></div>
+<div class="total-row final"><span>PENA FINAL</span><span id="total-pena-final">0 meses</span></div>
+<div class="total-row final" style="color:var(--warning)"><span>MULTA FINAL</span><span id="total-multa-final">R$ 0,00</span></div>
+</div>
+<button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="finalizarProcessoEImprimir()"><i class="fas fa-print"></i>Imprimir & Registrar</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="page-cartorio" class="page hidden">
+<div class="page-header">
+<h1><i class="fas fa-building-columns" style="color:var(--accent);margin-right:12px"></i>Cartorio Online</h1>
+<p>Gerencie registros de portes, casamentos, adocoes e divorcios.</p>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total de Registros</div></div>
+<div class="stat-card"><div class="stat-value" id="stat-pendentes">0</div><div class="stat-label">Pendentes / Em proc.</div></div>
+<div class="stat-card"><div class="stat-value" id="stat-concluidos">0</div><div class="stat-label">Concluidos</div></div>
+<div class="stat-card"><div class="stat-value" id="stat-valor">R$ 0</div><div class="stat-label">Valor Total</div></div>
+</div>
+
+<div class="cartorio-categories" id="cartorio-categories"></div>
+
+<div id="cartorio-subpage" class="hidden" style="margin-top:20px">
+<div class="back-btn" onclick="backToCategories()"><i class="fas fa-arrow-left"></i> Voltar para Categorias</div>
+<div class="subpage" id="subpage-content"></div>
+</div>
+
+<div class="card" style="margin-top:24px;">
+    <div class="card-header"><div class="card-title"><i class="fas fa-history"></i>Historico Geral de Procedimentos (Cartorio)</div></div>
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Advogado (Cargo/ID)</th>
+                    <th>Procedimento</th>
+                    <th>Data/Hora</th>
+                    <th>Estado / Status</th>
+                </tr>
+            </thead>
+            <tbody id="historico-cartorio-corpo"></tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<div id="page-contas" class="page hidden">
+    <div class="page-header">
+        <h1><i class="fas fa-users" style="color:var(--accent);margin-right:12px"></i>Contas Online</h1>
+        <p>Visualizacao de todos os usuarios registrados no sistema e seus historicos de acoes.</p>
+    </div>
+    <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fas fa-circle" style="color:var(--success); font-size:12px;"></i> Tabela de Contas Conectadas</div></div>
+        <div class="data-table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome na Cidade</th>
+                        <th>ID</th>
+                        <th>Cargo</th>
+                        <th>Acoes / Historico</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-contas-corpo"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="page-hierarquia" class="page hidden">
+<div class="page-header">
+<h1><i class="fas fa-sitemap" style="color:var(--accent);margin-right:12px"></i>Hierarquia do Sistema</h1>
+<p>Visualize todos os membros organizados por cargo e posicao hierarquica.</p>
+</div>
+<div class="stats-grid" id="hierarquia-stats"></div>
+<div id="hierarquia-container"></div>
+</div>
+</main>
+
+<div class="modal-overlay" id="modal-crime">
+<div class="modal">
+<div class="modal-header"><h2 id="modal-title">Adicionar Crime</h2><button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
+<div class="modal-body">
+<input type="hidden" id="crime-edit-id">
+<div class="form-group"><label>Nome do Crime</label><input type="text" class="form-control" id="crime-nome" placeholder="Ex: Furto Qualificado"></div>
+<div class="form-group"><label>Por que foi Criado</label><input type="text" class="form-control" id="crime-motivo" placeholder="Motivo da criacao deste crime"></div>
+<div class="form-group"><label>Descricao do Crime</label><textarea class="form-control" id="crime-descricao" placeholder="Descreva o crime..."></textarea></div>
+<div class="form-row">
+<div class="form-group"><label>Pena (em meses)</label><input type="number" class="form-control" id="crime-pena" placeholder="Ex: 24" min="0"></div>
+<div class="form-group"><label>Valor da Multa (R$)</label><input type="number" class="form-control" id="crime-multa" placeholder="Ex: 5000" min="0" step="0.01"></div>
+</div>
+</div>
+<div class="modal-footer"><button class="btn btn-outline" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveCrime()"><i class="fas fa-save"></i>Salvar Crime</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal-atenuante">
+<div class="modal">
+<div class="modal-header"><h2 id="atenuante-modal-title">Criar Novo Atenuante</h2><button class="modal-close" onclick="closeAtenuanteModal()"><i class="fas fa-times"></i></button></div>
+<div class="modal-body">
+<input type="hidden" id="atenuante-edit-index">
+<div class="form-group"><label>Nome da Circunstancia</label><input type="text" class="form-control" id="atenuante-nome" placeholder="Ex: Reu Confesso"></div>
+<div class="form-group"><label>Porcentagem de Reducao (%)</label><input type="number" class="form-control" id="atenuante-porcentagem" placeholder="Ex: 15" min="0" max="100"></div>
+<div class="form-group"><label>Descricao do Atenuante</label><textarea class="form-control" id="atenuante-descricao" placeholder="Descreva as condicoes deste atenuante..."></textarea></div>
+<div class="form-group" id="campo-porque-criar"><label>Porque Criar / Motivacao</label><input type="text" class="form-control" id="atenuante-porque" placeholder="Justificativa da existencia ou criacao"></div>
+</div>
+<div class="modal-footer"><button class="btn btn-outline" onclick="closeAtenuanteModal()">Cancelar</button><button class="btn btn-primary" onclick="saveAtenuante()"><i class="fas fa-save"></i> Salvar Atenuante</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal-registro">
+<div class="modal">
+<div class="modal-header"><h2 id="modal-reg-title">Novo Registro</h2><button class="modal-close" onclick="closeRegistroModal()"><i class="fas fa-times"></i></button></div>
+<div class="modal-body" id="modal-reg-body"></div>
+<div class="modal-footer"><button class="btn btn-outline" onclick="closeRegistroModal()">Cancelar</button><button class="btn btn-primary" onclick="saveRegistro()"><i class="fas fa-save"></i>Salvar Registro</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal-historico-conta">
+    <div class="modal">
+        <div class="modal-header"><h2 id="modal-historico-titulo">Historico Completo da Conta</h2><button class="modal-close" onclick="document.getElementById('modal-historico-conta').classList.remove('active')"><i class="fas fa-times"></i></button></div>
+        <div class="modal-body" id="modal-historico-corpo"></div>
+        <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('modal-historico-conta').classList.remove('active')">Fechar</button></div>
+    </div>
+</div>
+
+<script>
+// ===== DADOS GLOBAIS =====
+let usuarioLogado = null;
+
+let crimes = JSON.parse(localStorage.getItem('crimes')) || [
+{id:1,nome:'Furto Simples',motivo:'Proteger o patrimonio alheio',descricao:'Subtrair coisa movel alheia para si ou para outrem.',pena:12,multa:2000},
+{id:2,nome:'Furto Qualificado',motivo:'Agravar penas em situacoes especiais',descricao:'Furto com uso de arma, escalada, ou em lugar fechado.',pena:24,multa:5000},
+{id:3,nome:'Roubo',motivo:'Proteger a integridade fisica e patrimonial',descricao:'Subtrair coisa movel com uso de violencia ou grave ameaca.',pena:48,multa:10000},
+{id:4,nome:'Homicidio Simples',motivo:'Proteger a vida humana',descricao:'Matar alguem sem qualificadora.',pena:72,multa:15000},
+{id:5,nome:'Trafico de Drogas',motivo:'Combater o narcotrafico',descricao:'Importar, exportar, remeter, preparar, produzir ou vender drogas.',pena:60,multa:20000},
+{id:6,nome:'Porte Ilegal de Arma',motivo:'Controlar o uso de armas de fogo',descricao:'Possuir arma de fogo sem autorizacao legal.',pena:36,multa:8000},
+{id:7,nome:'Lesao Corporal',motivo:'Proteger a integridade fisica',descricao:'Ofender a integridade corporal ou saude de outrem.',pena:18,multa:3000},
+{id:8,nome:'Ameaca',motivo:'Proteger a tranquilidade publica',descricao:'Ameacar alguem por palavra, gesto ou escrito.',pena:6,multa:1000}
+];
+
+let atenuantesPadrao = [
+    {nome: 'Reu Confesso', descricao: 'O acusado confessou voluntariamente a autoria do crime.', porcentagem: 20, porque: 'Padrao do sistema'},
+    {nome: 'Advogado Presente', descricao: 'O acusado contou com assistencia juridica profissional no ato.', porcentagem: 10, porque: 'Padrao do sistema'},
+    {nome: 'Reu Primario', descricao: 'O acusado nao possui antecedentes criminais registrados.', porcentagem: 15, porque: 'Padrao do sistema'}
+];
+let atenuantes = JSON.parse(localStorage.getItem('atenuantes')) || atenuantesPadrao;
+let atenuantesSelecionados = new Set();
+
+let selectedCrimes = new Set();
+let tags = [];
+
+let cartorioData = JSON.parse(localStorage.getItem('cartorioData')) || {
+    portes: {registros:[],feitos:[],valores:[]},
+    casamentos: {registros:[],feitos:[],valores:[]},
+    adocoes: {registros:[],feitos:[],valores:[]},
+    divorcios: {registros:[],feitos:[],valores:[]}
+};
+
+let historicoCartorioGeral = JSON.parse(localStorage.getItem('historicoCartorioGeral')) || [];
+let listaContasOnline = JSON.parse(localStorage.getItem('listaContasOnline')) || [];
+let processosCalculadoraSalvos = JSON.parse(localStorage.getItem('processosCalculadoraSalvos')) || [];
+
+let currentCategory = null, currentSubpage = null, editingRegistroIndex = null;
+
+function fmt(v){return Array.isArray(v)?'0,00':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+// ===== CONTROLE DE LOGIN / REGISTRO =====
+function toggleAuthView(view) {
+    const loginView = document.getElementById('auth-login-view');
+    const registerView = document.getElementById('auth-register-view');
+    if(view === 'login') {
+        loginView.style.display = 'block';
+        registerView.style.display = 'none';
+    } else {
+        loginView.style.display = 'none';
+        registerView.style.display = 'block';
+    }
+}
+
+function efetuarRegistroInicial() {
+    const nome = document.getElementById('reg-user-nome').value.trim();
+    const id = document.getElementById('reg-user-id').value.trim();
+    const cargo = document.getElementById('reg-user-cargo').value;
+
+    if(!nome || !id) {
+        alert('Por favor, preencha o seu Nome e seu ID da cidade para continuar.');
+        return;
+    }
+
+    const cargosExclusivos = ['DESEMBARGADOR', 'CHEF.DESEMBARGADOR'];
+    if(cargosExclusivos.includes(cargo)) {
+        const jaExiste = listaContasOnline.some(c => c.cargo === cargo);
+        if(jaExiste) {
+            alert('Este cargo (' + cargo + ') ja esta ocupado. Apenas 1 conta pode ter este cargo.');
+            return;
+        }
+    }
+
+    if(listaContasOnline.some(c => c.id === id)) {
+        alert('Este ID ja esta registrado. Use a tela de login.');
+        return;
+    }
+
+    const novaConta = { nome, id, cargo };
+    listaContasOnline.push(novaConta);
+    localStorage.setItem('listaContasOnline', JSON.stringify(listaContasOnline));
+
+    efetuarLoginDireto(novaConta);
+}
+
+function efetuarLogin() {
+    const id = document.getElementById('login-user-id').value.trim();
+    if(!id) { alert('Por favor, preencha o seu ID.'); return; }
+    const conta = listaContasOnline.find(c => c.id === id);
+    if(!conta) { alert('ID nao encontrado. Verifique suas credenciais ou registre-se.'); return; }
+    efetuarLoginDireto(conta);
+}
+
+function efetuarLoginDireto(conta) {
+    usuarioLogado = { nome: conta.nome, id: conta.id, cargo: conta.cargo };
+    localStorage.setItem('sessaoAtiva', JSON.stringify(usuarioLogado));
+
+    document.getElementById('registro-bloqueio').style.display = 'none';
+    document.getElementById('user-badge').style.display = 'flex';
+    document.getElementById('badge-nome').textContent = usuarioLogado.nome;
+    document.getElementById('badge-cargo').textContent = usuarioLogado.cargo + ' (ID: ' + usuarioLogado.id + ')';
+
+    renderCrimes();
+    renderAtenuantes();
+    renderTabelaContas();
+    renderHistoricoCartorioGeral();
+    updatePreview();
+}
+
+function efetuarLogout() {
+    if(!confirm('Deseja realmente sair do sistema?')) return;
+    usuarioLogado = null;
+    localStorage.removeItem('sessaoAtiva');
+    location.reload();
+}
+
+function verificarSessaoAtiva() {
+    const sessao = localStorage.getItem('sessaoAtiva');
+    if(sessao) {
+        try {
+            const dados = JSON.parse(sessao);
+            const conta = listaContasOnline.find(c => c.id === dados.id);
+            if(conta) { efetuarLoginDireto(conta); return true; }
+        } catch(e) {}
+    }
+    return false;
+}
+
+function showPage(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('page-'+page).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const item = document.querySelector('[data-page="'+page+'"]');
+    if(item) item.classList.add('active');
+
+    if(page==='cartorio'){renderCartorioCategories();backToCategories(); renderHistoricoCartorioGeral();}
+    if(page==='contas'){renderTabelaContas();}
+    if(page==='hierarquia'){renderHierarquia();}
+}
+
+function saveCrimes(){localStorage.setItem('crimes',JSON.stringify(crimes))}
+function saveCartorio(){localStorage.setItem('cartorioData',JSON.stringify(cartorioData))}
+function saveAtenuantes(){localStorage.setItem('atenuantes',JSON.stringify(atenuantes))}
+
+// ===== ATENUANTES =====
+function renderAtenuantes() {
+    const container = document.getElementById('atenuantes-container');
+    container.innerHTML = atenuantes.map((at, index) => `
+        <div class="checkbox-item ${atenuantesSelecionados.has(index) ? 'active' : ''}" onclick="toggleAtenuante(${index})">
+            <i class="fas ${atenuantesSelecionados.has(index) ? 'fa-check-circle' : 'fa-circle-notch'}"></i>
+            <span>${at.nome} (-${at.porcentagem}%)</span>
+            <div class="atenuante-actions" onclick="event.stopPropagation()">
+                <button onclick="openAtenuanteModal('edit', ${index})" title="Editar"><i class="fas fa-edit"></i></button>
+                <button onclick="excluirAtenuante(${index})" title="Excluir"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleAtenuante(index) {
+    if(atenuantesSelecionados.has(index)) atenuantesSelecionados.delete(index);
+    else atenuantesSelecionados.add(index);
+    renderAtenuantes();
+    updatePreview();
+}
+
+function openAtenuanteModal(mode, index) {
+    const modal = document.getElementById('modal-atenuante');
+    const title = document.getElementById('atenuante-modal-title');
+    const campoPorque = document.getElementById('campo-porque-criar');
+    document.getElementById('atenuante-edit-index').value = index !== null ? index : '';
+    if(mode === 'edit' && index !== null) {
+        const at = atenuantes[index];
+        title.textContent = 'Editar Atenuante';
+        campoPorque.style.display = 'none';
+        document.getElementById('atenuante-nome').value = at.nome;
+        document.getElementById('atenuante-porcentagem').value = at.porcentagem;
+        document.getElementById('atenuante-descricao').value = at.descricao;
+        document.getElementById('atenuante-porque').value = at.porque || '';
+    } else {
+        title.textContent = 'Criar Novo Atenuante';
+        campoPorque.style.display = 'block';
+        document.getElementById('atenuante-nome').value = '';
+        document.getElementById('atenuante-porcentagem').value = '';
+        document.getElementById('atenuante-descricao').value = '';
+        document.getElementById('atenuante-porque').value = '';
+    }
+    modal.classList.add('active');
+}
+
+function closeAtenuanteModal() { document.getElementById('modal-atenuante').classList.remove('active'); }
+
+function saveAtenuante() {
+    const idx = document.getElementById('atenuante-edit-index').value;
+    const nome = document.getElementById('atenuante-nome').value.trim();
+    const porcentagem = parseInt(document.getElementById('atenuante-porcentagem').value) || 0;
+    const descricao = document.getElementById('atenuante-descricao').value.trim();
+    const porque = document.getElementById('atenuante-porque').value.trim();
+    if(!nome || porcentagem <= 0 || !descricao) { alert('Por favor preencha o Nome, Descricao e a Porcentagem!'); return; }
+    if(idx !== '') { atenuantes[idx] = { ...atenuantes[idx], nome, porcentagem, descricao }; }
+    else { if(!porque) { alert('Informe o motivo!'); return; } atenuantes.push({ nome, porcentagem, descricao, porque }); }
+    saveAtenuantes(); renderAtenuantes(); updatePreview(); closeAtenuanteModal();
+}
+
+function excluirAtenuante(index) {
+    if(!confirm('Deseja excluir este atenuante?')) return;
+    atenuantes.splice(index, 1);
+    atenuantesSelecionados.delete(index);
+    saveAtenuantes(); renderAtenuantes(); updatePreview();
+}
+
+// ===== CRIMES =====
+function renderCrimes(){
+    const list=document.getElementById('crime-list');
+    if(crimes.length===0){list.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><p>Nenhum crime cadastrado.</p></div>';return}
+    list.innerHTML=crimes.map(crime=>`<div class="crime-item ${selectedCrimes.has(crime.id)?'selected':''}" onclick="toggleCrime(${crime.id})"><div class="crime-check">${selectedCrimes.has(crime.id)?'<i class="fas fa-check"></i>':''}</div><div class="crime-info"><div class="crime-name">${crime.nome}</div><div class="crime-desc">${crime.descricao}</div></div><div class="crime-penalty"><div class="pena">${crime.pena} meses</div><div class="multa">R$ ${fmt(crime.multa)}</div></div><div class="crime-actions" onclick="event.stopPropagation()"><button onclick="editCrime(${crime.id})" title="Editar"><i class="fas fa-pen"></i></button><button onclick="deleteCrime(${crime.id})" title="Excluir"><i class="fas fa-trash"></i></button></div></div>`).join('');
+}
+
+function toggleCrime(id){if(selectedCrimes.has(id))selectedCrimes.delete(id);else selectedCrimes.add(id);renderCrimes();updatePreview()}
+
+function handleTagInput(e){
+    if(e.key==='Enter'){e.preventDefault();const val=e.target.value.trim();if(val&&!tags.includes(val)){tags.push(val);renderTags();updatePreview()}e.target.value=''}
+    if(e.key==='Backspace'&&e.target.value===''&&tags.length>0){tags.pop();renderTags();updatePreview()}
+}
+function renderTags(){
+    const c=document.getElementById('tag-container'),inp=document.getElementById('tag-input');
+    c.innerHTML='';tags.forEach((t,i)=>{const s=document.createElement('span');s.className='tag';s.innerHTML=t+' <button onclick="removeTag('+i+')"><i class="fas fa-times"></i></button>';c.appendChild(s)});c.appendChild(inp);
+}
+function removeTag(i){tags.splice(i,1);renderTags();updatePreview()}
+
+function openModal(mode,id){
+    const modal=document.getElementById('modal-crime'),title=document.getElementById('modal-title');
+    document.getElementById('crime-edit-id').value=id||'';
+    if(mode==='edit'&&id){
+        const c=crimes.find(x=>x.id===id);if(!c)return;
+        title.textContent='Editar Crime';
+        document.getElementById('crime-nome').value=c.nome;document.getElementById('crime-motivo').value=c.motivo;
+        document.getElementById('crime-descricao').value=c.descricao;document.getElementById('crime-pena').value=c.pena;document.getElementById('crime-multa').value=c.multa;
+    }else{
+        title.textContent='Adicionar Crime';
+        document.getElementById('crime-nome').value='';document.getElementById('crime-motivo').value='';
+        document.getElementById('crime-descricao').value='';document.getElementById('crime-pena').value='';document.getElementById('crime-multa').value='';
+    }
+    modal.classList.add('active');
+}
+function closeModal(){document.getElementById('modal-crime').classList.remove('active')}
+function saveCrime(){
+    const id=document.getElementById('crime-edit-id').value;
+    const nome=document.getElementById('crime-nome').value.trim();
+    const motivo=document.getElementById('crime-motivo').value.trim();
+    const descricao=document.getElementById('crime-descricao').value.trim();
+    const pena=parseInt(document.getElementById('crime-pena').value)||0;
+    const multa=parseFloat(document.getElementById('crime-multa').value)||0;
+    if(!nome){alert('Preencha o nome do crime!');return}
+    if(id){const idx=crimes.findIndex(c=>c.id==id);if(idx>=0)crimes[idx]={...crimes[idx],nome,motivo,descricao,pena,multa}}
+    else{const newId=crimes.length>0?Math.max(...crimes.map(c=>c.id))+1:1;crimes.push({id:newId,nome,motivo,descricao,pena,multa})}
+    saveCrimes();renderCrimes();updatePreview();closeModal();
+}
+function editCrime(id){openModal('edit',id)}
+function deleteCrime(id){if(!confirm('Tem certeza?'))return;crimes=crimes.filter(c=>c.id!==id);selectedCrimes.delete(id);saveCrimes();renderCrimes();updatePreview()}
+
+// ===== PREVIEW PANEL =====
+function updatePreview(){
+    const id=document.getElementById('acusado-id').value.trim();
+    const nome=document.getElementById('acusado-nome').value.trim();
+    const descricao=document.getElementById('acusado-descricao').value.trim();
+    document.getElementById('preview-id').textContent=id?'ID: '+id:'ID: --';
+    document.getElementById('preview-nome').textContent=nome?'Nome: '+nome:'Nome: --';
+    document.getElementById('preview-descricao').textContent=descricao||'Nenhuma descricao informada.';
+    document.getElementById('preview-descricao').style.color=descricao?'var(--text)':'var(--muted)';
+    document.getElementById('preview-descricao').style.fontStyle=descricao?'normal':'italic';
+    const itensEl=document.getElementById('preview-itens');
+    if(tags.length>0){itensEl.innerHTML=tags.map(t=>'<span style="display:inline-block;padding:2px 8px;background:var(--primary-light);border-radius:4px;margin:2px;font-size:12px">'+t+'</span>').join('');itensEl.style.color='var(--text)'}
+    else{itensEl.textContent='Nenhum item apreendido.';itensEl.style.color='var(--muted)'}
+    const crimesEl=document.getElementById('preview-crimes');
+    const selected=crimes.filter(c=>selectedCrimes.has(c.id));
+    if(selected.length>0){crimesEl.innerHTML=selected.map(c=>'<div class="preview-crime-tag"><span>'+c.nome+'</span><span style="color:var(--accent);font-weight:700">'+c.pena+'m / R$ '+fmt(c.multa)+'</span></div>').join('')}
+    else{crimesEl.innerHTML='<div style="color:var(--muted);font-style:italic">Nenhum crime selecionado.</div>'}
+
+    const circEl=document.getElementById('preview-circunstancias');
+    let totalDescontoPct = 0;
+    let ativasTextos = [];
+    atenuantesSelecionados.forEach(idx => {
+        const at = atenuantes[idx];
+        if(at) { totalDescontoPct += at.porcentagem; ativasTextos.push(`${at.nome} (-${at.porcentagem}%)`); }
+    });
+    circEl.innerHTML=ativasTextos.length>0?ativasTextos.map(a=>'<div class="discount-tag"><i class="fas fa-check"></i>'+a+'</div>').join(''):'<span style="color:var(--muted)">Nenhuma circunstancia atenuante.</span>';
+    let penaTotal=selected.reduce((s,c)=>s+c.pena,0);
+    let multaTotal=selected.reduce((s,c)=>s+c.multa,0);
+    document.getElementById('total-pena-bruta').textContent=penaTotal+' meses';
+    document.getElementById('total-multa-bruta').textContent='R$ '+fmt(multaTotal);
+    const rowDesconto=document.getElementById('row-desconto');
+    if(totalDescontoPct>0){rowDesconto.style.display='flex';document.getElementById('total-desconto').textContent='- '+totalDescontoPct+'%'}
+    else{rowDesconto.style.display='none'}
+    const penaFinal=Math.max(0,Math.round(penaTotal*(1-totalDescontoPct/100)));
+    const multaFinal=Math.max(0,Math.round(multaTotal*(1-totalDescontoPct/100)));
+    document.getElementById('total-pena-final').textContent=penaFinal+' meses';
+    document.getElementById('total-multa-final').textContent='R$ '+fmt(multaFinal);
+}
+
+function finalizarProcessoEImprimir() {
+    const idAcusado = document.getElementById('acusado-id').value.trim();
+    const nomeAcusado = document.getElementById('acusado-nome').value.trim();
+    if(!idAcusado || !nomeAcusado) { alert('Preencha os dados do acusado.'); return; }
+    const selectedCrimesNomes = crimes.filter(c => selectedCrimes.has(c.id)).map(c => c.nome).join(', ') || "Nenhum selecionado";
+    const processoMeta = {
+        advogadoId: usuarioLogado.id,
+        tipo: 'Calculadora Penal',
+        detalhes: `Sentenca de ${nomeAcusado} (ID: ${idAcusado}) - Crimes: ${selectedCrimesNomes} - Pena: ${document.getElementById('total-pena-final').textContent}`,
+        data: new Date().toLocaleDateString('pt-BR'),
+        hora: new Date().toLocaleTimeString('pt-BR')
+    };
+    processosCalculadoraSalvos.push(processoMeta);
+    localStorage.setItem('processosCalculadoraSalvos', JSON.stringify(processosCalculadoraSalvos));
+    window.print();
+}
+
+// ===== TABELA DE CONTAS =====
+function renderTabelaContas() {
+    const corpo = document.getElementById('tabela-contas-corpo');
+    if(listaContasOnline.length === 0) {
+        corpo.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">Nenhuma conta online no momento.</td></tr>`;
+        return;
+    }
+    corpo.innerHTML = listaContasOnline.map(conta => `
+        <tr>
+            <td><strong>${conta.nome}</strong></td>
+            <td>${conta.id}</td>
+            <td><span class="status-badge status-emandamento">${conta.cargo}</span></td>
+            <td>
+                <button class="btn btn-outline btn-sm" onclick="visualizarHistoricoConta('${conta.id}', '${conta.nome}')">
+                    <i class="fas fa-eye"></i> Ver Historico
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function visualizarHistoricoConta(id, nome) {
+    const modal = document.getElementById('modal-historico-conta');
+    const corpo = document.getElementById('modal-historico-corpo');
+    const titulo = document.getElementById('modal-historico-titulo');
+    titulo.textContent = 'Historico Completo da Conta';
+    const procCalc = processosCalculadoraSalvos.filter(p => p.advogadoId === id);
+    const procCart = historicoCartorioGeral.filter(p => p.advogadoId === id);
+    let html = `<h4 style="margin-bottom:12px; color:var(--accent);">Acoes de ${nome} (ID: ${id})</h4>`;
+    html += `<h5 style="margin-top:16px; margin-bottom:6px;">Processos no Cartorio:</h5>`;
+    if(procCart.length === 0) { html += `<p style="color:var(--muted); font-size:12px; font-style:italic;">Nenhum procedimento no cartorio realizado.</p>`; }
+    else {
+        html += procCart.map(p => `
+            <div style="background:var(--bg); border:1px solid var(--border); padding:8px; border-radius:6px; margin-bottom:6px; font-size:12px;">
+                <strong>${p.servico}</strong> (${p.status})<br>
+                <small class="text-muted">${p.data} as ${p.hora}</small>
+            </div>
+        `).join('');
+    }
+    html += `<h5 style="margin-top:16px; margin-bottom:6px;">Calculos Penais Executados:</h5>`;
+    if(procCalc.length === 0) { html += `<p style="color:var(--muted); font-size:12px; font-style:italic;">Nenhum calculo ou sentenca impressa.</p>`; }
+    else {
+        html += procCalc.map(p => `
+            <div style="background:var(--bg); border:1px solid var(--border); padding:8px; border-radius:6px; margin-bottom:6px; font-size:12px;">
+                ${p.detalhes}<br>
+                <small class="text-muted">${p.data} as ${p.hora}</small>
+            </div>
+        `).join('');
+    }
+    corpo.innerHTML = html;
+    modal.classList.add('active');
+}
+
+// ===== CARTORIO =====
+const categoriesConfig={
+    portes:{title:'Porte de Armas',icon:'fa-gun',class:'portes',desc:'Registros e autorizacoes de armamentos'},
+    casamentos:{title:'Casamentos',icon:'fa-heart',class:'casamentos',desc:'Uniao estavel e certidoes'},
+    adocoes:{title:'Adocoes',icon:'fa-child',class:'adocao',desc:'Processos de adocao legal'},
+    divorcios:{title:'Divorcios',icon:'fa-heart-crack',class:'divorcio',desc:'Dissolucao de uniao conjugal'}
+};
+
+function renderCartorioCategories(){
+    const container=document.getElementById('cartorio-categories');
+    if(!container)return;
+    updateCartorioStats();
+    container.innerHTML=Object.keys(categoriesConfig).map(key=>{
+        const cfg=categoriesConfig[key],data=cartorioData[key]||{registros:[]};
+        return `<div class="cartorio-category">
+        <div class="cat-header" onclick="openSubpage('${key}')">
+        <div class="cat-icon ${cfg.class}"><i class="fas ${cfg.icon}"></i></div>
+        <div class="cat-info"><h3>${cfg.title}</h3><span>${data.registros.length} Procedimentos Cadastrados</span></div>
+        <i class="fas fa-chevron-right cat-toggle"></i>
+        </div></div>`
+    }).join('');
+}
+
+function updateCartorioStats(){
+    let total=0,pendentes=0,concluidos=0,valor=0;
+    Object.keys(cartorioData).forEach(k=>{
+        const list=cartorioData[k].registros||[];
+        total+=list.length;
+        list.forEach(r=>{
+            if(r.status==='Concluido')concluidos++;
+            else pendentes++;
+            valor+=(parseFloat(r.valor)||0);
+        });
+    });
+    document.getElementById('stat-total').textContent=total;
+    document.getElementById('stat-pendentes').textContent=pendentes;
+    document.getElementById('stat-concluidos').textContent=concluidos;
+    document.getElementById('stat-valor').textContent='R$ '+fmt(valor);
+}
+
+function renderHistoricoCartorioGeral() {
+    const corpo = document.getElementById('historico-cartorio-corpo');
+    if(!corpo) return;
+    if(historicoCartorioGeral.length === 0) {
+        corpo.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">Nenhum procedimento registrado no historico geral.</td></tr>`;
+        return;
+    }
+    corpo.innerHTML = historicoCartorioGeral.map(h => `
+        <tr>
+            <td><strong>${h.advogadoNome}</strong><br><small style="color:var(--muted);">${h.advogadoCargo} (ID: ${h.advogadoId})</small></td>
+            <td>${h.servico}</td>
+            <td>${h.data} as ${h.hora}</td>
+            <td><span class="status-badge ${h.status === 'Concluido' ? 'status-concluido' : h.status === 'Em Andamento' ? 'status-emandamento' : 'status-pendente'}">${h.status}</span></td>
+        </tr>
+    `).join('');
+}
+
+function openSubpage(cat){
+    currentCategory=cat;
+    document.getElementById('cartorio-categories').classList.add('hidden');
+    const sub=document.getElementById('cartorio-subpage');sub.classList.remove('hidden');
+    const content=document.getElementById('subpage-content'),cfg=categoriesConfig[cat],data=cartorioData[cat]||{registros:[]};
+    content.innerHTML=`<div class="subpage-header"><i class="fas ${cfg.icon}" style="color:var(--accent)"></i><h2>Procedimentos de ${cfg.title}</h2></div>
+    <div style="display:flex;justify-content:between;align-items:center;margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+        <p style="color:var(--muted); flex:1;">Lista completa de procedimentos em processo ou concluidos.</p>
+        <button class="btn btn-primary btn-sm" onclick="openRegistroModal('add')"><i class="fas fa-plus"></i> Novo Registro</button>
+    </div>
+    <div class="data-table-container">
+    <table class="data-table"><thead><tr><th>Cidadao / ID</th><th>Advogado Responsavel</th><th>Status</th><th>Valor</th><th>Acoes</th></tr></thead>
+    <tbody>${data.registros.length===0?'<tr><td colspan="5" style="text-align:center;color:var(--muted)">Nenhum registro nesta categoria.</td></tr>':
+    data.registros.map((r,i)=>`<tr><td><strong>${r.cidadao}</strong><br><small style="color:var(--muted)">ID: ${r.cidadaoId}</small></td><td>${r.advogadoNome}<br><small style="color:var(--muted)">${r.advogadoCargo}</small></td><td><span class="status-badge ${r.status==='Concluido'?'status-concluido':r.status==='Em Andamento'?'status-emandamento':'status-pendente'}">${r.status}</span></td><td>R$ ${fmt(r.valor)}</td><td><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" style="padding:4px 8px;" onclick="openRegistroModal('edit',${i})" title="Editar"><i class="fas fa-edit"></i></button><button class="btn btn-danger btn-sm" style="padding:4px 8px;" onclick="deleteRegistro(${i})" title="Excluir"><i class="fas fa-trash"></i></button></div></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function backToCategories(){
+    currentCategory=null;
+    document.getElementById('cartorio-subpage').classList.add('hidden');
+    document.getElementById('cartorio-categories').classList.remove('hidden');
+    renderCartorioCategories();
+}
+
+function openRegistroModal(mode,index){
+    editingRegistroIndex=index;
+    const modal=document.getElementById('modal-registro'),title=document.getElementById('modal-reg-title'),body=document.getElementById('modal-reg-body');
+    title.textContent=mode==='edit'?'Editar Registro':'Novo Registro de '+categoriesConfig[currentCategory].title;
+    let r=mode==='edit'?cartorioData[currentCategory].registros[index]:{cidadao:'',cidadaoId:'',valor:'',status:'Pendente',advogadoNome: usuarioLogado.nome, advogadoId: usuarioLogado.id, advogadoCargo: usuarioLogado.cargo};
+    body.innerHTML=`
+    <div class="form-row">
+    <div class="form-group"><label>Nome do Cidadao (Envolvido)</label><input type="text" class="form-control" id="reg-cidadao" value="${r.cidadao}"></div>
+    <div class="form-group"><label>ID do Cidadao</label><input type="text" class="form-control" id="reg-cidadaoid" value="${r.cidadaoId}"></div>
+    </div>
+    <div class="form-row">
+    <div class="form-group"><label>Nome do Advogado</label><input type="text" class="form-control" id="reg-adv-nome" value="${r.advogadoNome}"></div>
+    <div class="form-group"><label>ID do Advogado</label><input type="number" class="form-control" id="reg-adv-id" value="${r.advogadoId}"></div>
+    </div>
+    <div class="form-group">
+    <label>Cargo do Advogado</label>
+    <select class="form-control" id="reg-adv-cargo">
+        <option value="Estagiario OAB" ${r.advogadoCargo==='Estagiario OAB'?'selected':''}>Estagiario OAB</option>
+        <option value="advogado junior" ${r.advogadoCargo==='advogado junior'?'selected':''}>Advogado Junior</option>
+        <option value="advogado senior" ${r.advogadoCargo==='advogado senior'?'selected':''}>Advogado Senior</option>
+        <option value="advogado" ${r.advogadoCargo==='advogado'?'selected':''}>Advogado</option>
+        <option value="escrivao" ${r.advogadoCargo==='escrivao'?'selected':''}>Escrivao</option>
+        <option value="promotor" ${r.advogadoCargo==='promotor'?'selected':''}>Promotor</option>
+        <option value="juiz" ${r.advogadoCargo==='juiz'?'selected':''}>Juiz</option>
+        <option value="CORREGEDOR" ${r.advogadoCargo==='CORREGEDOR'?'selected':''}>CORREGEDOR</option>
+        <option value="DIRETORIA TRIBUNAL" ${r.advogadoCargo==='DIRETORIA TRIBUNAL'?'selected':''}>DIRETORIA TRIBUNAL</option>
+        <option value="DESEMBARGADOR" ${r.advogadoCargo==='DESEMBARGADOR'?'selected':''}>DESEMBARGADOR</option>
+        <option value="CHEF.DESEMBARGADOR" ${r.advogadoCargo==='CHEF.DESEMBARGADOR'?'selected':''}>CHEF.DESEMBARGADOR</option>
+    </select>
+    </div>
+    <div class="form-row">
+    <div class="form-group"><label>Taxa / Valor (R$)</label><input type="number" class="form-control" id="reg-valor" value="${r.valor}"></div>
+    <div class="form-group"><label>Estado do Procedimento</label><select class="form-control" id="reg-status">
+    <option value="Pendente" ${r.status==='Pendente'?'selected':''}>Pendente</option>
+    <option value="Em Andamento" ${r.status==='Em Andamento'?'selected':''}>Em Andamento</option>
+    <option value="Concluido" ${r.status==='Concluido'?'selected':''}>Concluido</option>
+    </select></div>
+    </div>`;
+    modal.classList.add('active');
+}
+
+function closeRegistroModal(){document.getElementById('modal-registro').classList.remove('active')}
+
+function saveRegistro(){
+    const cidadao=document.getElementById('reg-cidadao').value.trim();
+    const cidadaoId=document.getElementById('reg-cidadaoid').value.trim();
+    const advogadoNome=document.getElementById('reg-adv-nome').value.trim();
+    const advogadoId=document.getElementById('reg-adv-id').value.trim();
+    const advogadoCargo=document.getElementById('reg-adv-cargo').value;
+    const valor=parseFloat(document.getElementById('reg-valor').value)||0;
+    const status=document.getElementById('reg-status').value;
+    if(!cidadao || !advogadoNome || !advogadoId){alert('Preencha os campos obrigatorios!');return}
+    const obj={cidadao,cidadaoId,advogadoNome,advogadoId,advogadoCargo,valor,status};
+    if(editingRegistroIndex!==null){ cartorioData[currentCategory].registros[editingRegistroIndex]=obj; }
+    else{ cartorioData[currentCategory].registros.push(obj); }
+    const acaoHistorico = {
+        advogadoNome, advogadoId, advogadoCargo,
+        servico: `${categoriesConfig[currentCategory].title} (${cidadao} / ID: ${cidadaoId})`,
+        status,
+        data: new Date().toLocaleDateString('pt-BR'),
+        hora: new Date().toLocaleTimeString('pt-BR')
+    };
+    historicoCartorioGeral.unshift(acaoHistorico);
+    localStorage.setItem('historicoCartorioGeral', JSON.stringify(historicoCartorioGeral));
+    saveCartorio(); openSubpage(currentCategory); closeRegistroModal(); updateCartorioStats();
+}
+
+function deleteRegistro(index){
+    if(!confirm('Deseja excluir este procedimento?'))return;
+    cartorioData[currentCategory].registros.splice(index,1);
+    saveCartorio(); openSubpage(currentCategory); updateCartorioStats();
+}
+
+// ===== HIERARQUIA - SISTEMA DE PERMISSOES CORRIGIDO =====
+// Agora DESEMBARGADOR e CHEF.DESEMBARGADOR tem permissao para:
+// 1. Promover (subir cargo)
+// 2. Rebaixar (descer cargo)
+// 3. Exonerar (remover da funcao)
+
+const ordemHierarquica = [
+    'Estagiario OAB',
+    'advogado junior',
+    'advogado',
+    'advogado senior',
+    'escrivao',
+    'promotor',
+    'juiz',
+    'CORREGEDOR',
+    'DIRETORIA TRIBUNAL',
+    'DESEMBARGADOR',
+    'CHEF.DESEMBARGADOR'
+];
+
+const coresHierarquia = {
+    'Estagiario OAB': { cor: '#94a3b8', bg: 'rgba(148,163,184,0.15)', icon: 'fa-user-graduate' },
+    'advogado junior': { cor: '#4299e1', bg: 'rgba(66,153,225,0.15)', icon: 'fa-user-tie' },
+    'advogado': { cor: '#63b3ed', bg: 'rgba(99,179,237,0.15)', icon: 'fa-scale-balanced' },
+    'advogado senior': { cor: '#38b2ac', bg: 'rgba(56,178,172,0.15)', icon: 'fa-gavel' },
+    'escrivao': { cor: '#d69e2e', bg: 'rgba(214,158,46,0.15)', icon: 'fa-pen-nib' },
+    'promotor': { cor: '#ed8936', bg: 'rgba(237,137,54,0.15)', icon: 'fa-bullhorn' },
+    'juiz': { cor: '#e53e3e', bg: 'rgba(229,62,62,0.15)', icon: 'fa-landmark' },
+    'CORREGEDOR': { cor: '#9f7aea', bg: 'rgba(159,122,234,0.15)', icon: 'fa-magnifying-glass' },
+    'DIRETORIA TRIBUNAL': { cor: '#d53f8c', bg: 'rgba(213,63,140,0.15)', icon: 'fa-building-columns' },
+    'DESEMBARGADOR': { cor: '#f56565', bg: 'rgba(245,101,101,0.15)', icon: 'fa-crown' },
+    'CHEF.DESEMBARGADOR': { cor: '#ecc94b', bg: 'rgba(236,201,75,0.15)', icon: 'fa-star' }
+};
+
+// Verifica se o usuario logado tem permissao de edicao (DESEMBARGADOR ou CHEF.DESEMBARGADOR)
+function temPermissaoEdicao() {
+    if(!usuarioLogado) return false;
+    return usuarioLogado.cargo === 'DESEMBARGADOR' || usuarioLogado.cargo === 'CHEF.DESEMBARGADOR';
+}
+
+function renderHierarquia() {
+    const container = document.getElementById('hierarquia-container');
+    const statsContainer = document.getElementById('hierarquia-stats');
+
+    if(listaContasOnline.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-users-slash"></i><p>Nenhuma conta registrada no sistema.</p></div>';
+        statsContainer.innerHTML = '';
+        return;
+    }
+
+    const contasPorCargo = {};
+    listaContasOnline.forEach(function(conta) {
+        if(!contasPorCargo[conta.cargo]) contasPorCargo[conta.cargo] = [];
+        contasPorCargo[conta.cargo].push(conta);
+    });
+
+    const totalCargos = Object.keys(contasPorCargo).length;
+    const totalContas = listaContasOnline.length;
+    const cargoEntries = Object.entries(contasPorCargo).sort(function(a,b) { return b[1].length - a[1].length; });
+    const cargoMaior = cargoEntries[0];
+    const minhaPos = usuarioLogado ? ordemHierarquica.indexOf(usuarioLogado.cargo) + 1 : '-';
+    const podeEditar = temPermissaoEdicao();
+
+    statsContainer.innerHTML = 
+        '<div class="stat-card"><div class="stat-value">' + totalContas + '</div><div class="stat-label">Total de Membros</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + totalCargos + '</div><div class="stat-label">Cargos Ativos</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + (cargoMaior ? cargoMaior[1].length : 0) + '</div><div class="stat-label">Maior Cargo: ' + (cargoMaior ? cargoMaior[0] : '-') + '</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + (minhaPos !== '-' ? '#' + minhaPos : '-') + '</div><div class="stat-label">Sua Posicao</div></div>';
+
+    let htm = '';
+    if(podeEditar) {
+        htm += '<div class="card" style="margin-bottom:20px; border-color:var(--accent);"><div style="padding:16px 20px; display:flex; align-items:center; gap:10px; color:var(--accent);"><i class="fas fa-shield-halved" style="font-size:18px;"></i><span style="font-weight:600; font-size:14px;">Voce possui permissao de edicao de cargos (Promover, Rebaixar, Exonerar)</span></div></div>';
+    }
+
+    ordemHierarquica.forEach(function(cargo, idx) {
+        const contas = contasPorCargo[cargo] || [];
+        const config = coresHierarquia[cargo] || { cor: '#94a3b8', bg: 'rgba(148,163,184,0.15)', icon: 'fa-user' };
+        const exclusivo = (cargo === 'DESEMBARGADOR' || cargo === 'CHEF.DESEMBARGADOR');
+
+        htm += '<div class="card" style="margin-bottom:16px;">' +
+            '<div class="cat-header" onclick="toggleHierarquiaCard(this)" style="padding:18px 20px; cursor:pointer; border-radius:var(--r); border-bottom:1px solid var(--border);">' +
+            '<div style="display:flex; align-items:center; gap:12px; flex:1;">' +
+            '<div style="width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:' + config.bg + '; color:' + config.cor + '; font-size:18px;">' +
+            '<i class="fas ' + config.icon + '"></i></div>' +
+            '<div style="flex:1;">' +
+            '<h3 style="font-size:15px; font-weight:700; margin-bottom:2px;">' + cargo + '</h3>' +
+            '<span style="font-size:12px; color:var(--muted);">Nivel ' + (idx + 1) + ' - ' + contas.length + ' membro' + (contas.length !== 1 ? 's' : '') + (exclusivo ? ' - <span style="color:var(--accent); font-weight:700;">EXCLUSIVO</span>' : '') + '</span>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px;">' +
+            '<span style="background:' + config.bg + '; color:' + config.cor + '; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">' + contas.length + '</span>' +
+            '<i class="fas fa-chevron-down cat-toggle" style="color:var(--muted); transition:transform .3s;"></i>' +
+            '</div></div></div>' +
+            '<div class="hierarquia-body" style="max-height:0; overflow:hidden; transition:max-height .4s ease;">' +
+            '<div style="padding:0 20px 20px;">';
+
+        if(contas.length === 0) {
+            htm += '<p style="color:var(--muted); font-size:13px; text-align:center; padding:20px;"><i class="fas fa-inbox" style="margin-right:6px;"></i>Nenhum membro neste cargo.</p>';
+        } else {
+            htm += '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:12px; margin-top:12px;">';
+            contas.forEach(function(c) {
+                const isMe = usuarioLogado && usuarioLogado.id === c.id;
+                // Permite editar se: tem permissao E nao eh o proprio usuario
+                const podeEditarEste = podeEditar && !isMe;
+
+                htm += '<div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--rs); padding:14px; display:flex; align-items:center; gap:12px;' + (isMe ? ' border-color:var(--accent);' : '') + '">' +
+                    '<div style="width:40px; height:40px; border-radius:50%; background:' + config.bg + '; color:' + config.cor + '; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0;">' + c.nome.charAt(0).toUpperCase() + '</div>' +
+                    '<div style="flex:1; min-width:0;">' +
+                    '<div style="font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + c.nome + '</div>' +
+                    '<div style="font-size:12px; color:var(--muted);">ID: ' + c.id + (isMe ? ' <span style="color:var(--accent); font-weight:700;">(Voce)</span>' : '') + '</div>' +
+                    '</div>';
+
+                // ===== BOTOES DE ACAO =====
+                if(podeEditarEste) {
+                    // DESEMBARGADOR e CHEF.DESEMBARGADOR veem TODOS os botoes
+                    htm += '<div class="acao-btns">';
+
+                    // Botao Promover (so aparece se nao for o ultimo cargo)
+                    if(idx < ordemHierarquica.length - 1) {
+                        htm += '<button class="acao-btn promover" onclick="event.stopPropagation(); abrirModalPromover(' + "'" + c.id + "'" + ',' + "'" + c.nome + "'" + ',' + "'" + c.cargo + "'" + ')" title="Promover (Subir Cargo)"><i class="fas fa-arrow-up"></i> Up</button>';
+                    }
+
+                    // Botao Rebaixar (so aparece se nao for o primeiro cargo)
+                    if(idx > 0) {
+                        htm += '<button class="acao-btn rebaixar" onclick="event.stopPropagation(); abrirModalRebaixar(' + "'" + c.id + "'" + ',' + "'" + c.nome + "'" + ',' + "'" + c.cargo + "'" + ')" title="Rebaixar (Descer Cargo)"><i class="fas fa-arrow-down"></i> Down</button>';
+                    }
+
+                    // Botao Exonerar (sempre disponivel)
+                    htm += '<button class="acao-btn exonerar" onclick="event.stopPropagation(); confirmarExoneracao(' + "'" + c.id + "'" + ',' + "'" + c.nome + "'" + ')" title="Exonerar (Remover do Cargo)"><i class="fas fa-user-slash"></i> Exonerar</button>';
+
+                    // Botao Ver Historico
+                    htm += '<button class="acao-btn ver-historico" onclick="event.stopPropagation(); visualizarHistoricoConta(' + "'" + c.id + "'" + ',' + "'" + c.nome + "'" + ')" title="Ver Historico"><i class="fas fa-eye"></i></button>';
+
+                    htm += '</div>';
+                } else {
+                    // Apenas ver historico para quem nao tem permissao
+                    htm += '<button class="acao-btn ver-historico" onclick="event.stopPropagation(); visualizarHistoricoConta(' + "'" + c.id + "'" + ',' + "'" + c.nome + "'" + ')" title="Ver Historico" style="flex-shrink:0;"><i class="fas fa-eye"></i></button>';
+                }
+
+                htm += '</div>';
+            });
+            htm += '</div>';
+        }
+        htm += '</div></div></div>';
+    });
+
+    container.innerHTML = htm;
+}
+
+function toggleHierarquiaCard(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.cat-toggle');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    if(isOpen) {
+        body.style.maxHeight = '0px';
+        toggle.style.transform = 'rotate(0deg)';
+    } else {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        toggle.style.transform = 'rotate(180deg)';
+    }
+}
+
+// ===== MODAL DE PROMOVER (SUBIR CARGO) =====
+function abrirModalPromover(id, nome, cargoAtual) {
+    if(!temPermissaoEdicao()) { alert('Voce nao possui permissao para alterar cargos.'); return; }
+
+    const idxAtual = ordemHierarquica.indexOf(cargoAtual);
+    let opcoes = '';
+
+    // Mostra apenas cargos ACIMA do atual
+    for(let i = idxAtual + 1; i < ordemHierarquica.length; i++) {
+        const c = ordemHierarquica[i];
+        const exclusivo = (c === 'DESEMBARGADOR' || c === 'CHEF.DESEMBARGADOR');
+        if(exclusivo) {
+            const jaExiste = listaContasOnline.some(conta => conta.cargo === c);
+            if(jaExiste) continue;
+        }
+        opcoes += '<option value="' + c + '">' + c + '</option>';
+    }
+
+    if(!opcoes) { alert('Nao ha cargos superiores disponiveis para promocao.'); return; }
+
+    const modal = document.getElementById('modal-historico-conta');
+    const corpo = document.getElementById('modal-historico-corpo');
+    const titulo = modal.querySelector('h2');
+
+    titulo.textContent = 'Promover: ' + nome;
+    corpo.innerHTML = 
+        '<div style="margin-bottom:16px;">' +
+        '<p style="color:var(--muted); font-size:13px; margin-bottom:8px;"><strong>Membro:</strong> ' + nome + ' (ID: ' + id + ')</p>' +
+        '<p style="color:var(--muted); font-size:13px; margin-bottom:16px;"><strong>Cargo Atual:</strong> <span style="color:var(--accent); font-weight:700;">' + cargoAtual + '</span></p>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label style="color:var(--success);"><i class="fas fa-arrow-up"></i> Novo Cargo (Promocao)</label>' +
+        '<select class="form-control" id="promover-novo-cargo">' + opcoes + '</select>' +
+        '</div>' +
+        '<div style="display:flex; gap:10px; margin-top:20px;">' +
+        '<button class="btn btn-success" style="flex:1; justify-content:center;" onclick="confirmarPromocao(' + "'" + id + "'" + ')"><i class="fas fa-check"></i> Confirmar Promocao</button>' +
+        '<button class="btn btn-outline" onclick="fecharModalAcao()">Cancelar</button>' +
+        '</div>';
+
+    modal.classList.add('active');
+}
+
+function confirmarPromocao(id) {
+    if(!temPermissaoEdicao()) { alert('Permissao negada.'); return; }
+    const novoCargo = document.getElementById('promover-novo-cargo').value;
+    const conta = listaContasOnline.find(c => c.id === id);
+    if(!conta) return;
+
+    const exclusivos = ['DESEMBARGADOR', 'CHEF.DESEMBARGADOR'];
+    if(exclusivos.includes(novoCargo)) {
+        const jaExiste = listaContasOnline.some(c => c.cargo === novoCargo && c.id !== id);
+        if(jaExiste) { alert('Este cargo ja esta ocupado.'); return; }
+    }
+
+    const cargoAntigo = conta.cargo;
+    conta.cargo = novoCargo;
+    localStorage.setItem('listaContasOnline', JSON.stringify(listaContasOnline));
+
+    if(usuarioLogado && usuarioLogado.id === id) {
+        usuarioLogado.cargo = novoCargo;
+        document.getElementById('badge-cargo').textContent = novoCargo + ' (ID: ' + id + ')';
+    }
+
+    alert('Membro promovido com sucesso!\n' + conta.nome + ' foi promovido de ' + cargoAntigo + ' para ' + novoCargo);
+    fecharModalAcao();
+    renderHierarquia();
+    renderTabelaContas();
+}
+
+// ===== MODAL DE REBAIXAR (DESCER CARGO) =====
+function abrirModalRebaixar(id, nome, cargoAtual) {
+    if(!temPermissaoEdicao()) { alert('Voce nao possui permissao para alterar cargos.'); return; }
+
+    const idxAtual = ordemHierarquica.indexOf(cargoAtual);
+    let opcoes = '';
+
+    // Mostra apenas cargos ABAIXO do atual
+    for(let i = idxAtual - 1; i >= 0; i--) {
+        const c = ordemHierarquica[i];
+        opcoes += '<option value="' + c + '">' + c + '</option>';
+    }
+
+    if(!opcoes) { alert('Nao ha cargos inferiores disponiveis para rebaixamento.'); return; }
+
+    const modal = document.getElementById('modal-historico-conta');
+    const corpo = document.getElementById('modal-historico-corpo');
+    const titulo = modal.querySelector('h2');
+
+    titulo.textContent = 'Rebaixar: ' + nome;
+    corpo.innerHTML = 
+        '<div style="margin-bottom:16px;">' +
+        '<p style="color:var(--muted); font-size:13px; margin-bottom:8px;"><strong>Membro:</strong> ' + nome + ' (ID: ' + id + ')</p>' +
+        '<p style="color:var(--muted); font-size:13px; margin-bottom:16px;"><strong>Cargo Atual:</strong> <span style="color:var(--accent); font-weight:700;">' + cargoAtual + '</span></p>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label style="color:var(--warning);"><i class="fas fa-arrow-down"></i> Novo Cargo (Rebaixamento)</label>' +
+        '<select class="form-control" id="rebaixar-novo-cargo">' + opcoes + '</select>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label>Motivo do Rebaixamento</label>' +
+        '<textarea class="form-control" id="rebaixar-motivo" placeholder="Informe o motivo do rebaixamento..." style="min-height:60px;"></textarea>' +
+        '</div>' +
+        '<div style="display:flex; gap:10px; margin-top:20px;">' +
+        '<button class="btn btn-primary" style="flex:1; justify-content:center; background:var(--warning); border-color:var(--warning);" onclick="confirmarRebaixamento(' + "'" + id + "'" + ')"><i class="fas fa-check"></i> Confirmar Rebaixamento</button>' +
+        '<button class="btn btn-outline" onclick="fecharModalAcao()">Cancelar</button>' +
+        '</div>';
+
+    modal.classList.add('active');
+}
+
+function confirmarRebaixamento(id) {
+    if(!temPermissaoEdicao()) { alert('Permissao negada.'); return; }
+    const novoCargo = document.getElementById('rebaixar-novo-cargo').value;
+    const motivo = document.getElementById('rebaixar-motivo').value.trim();
+    const conta = listaContasOnline.find(c => c.id === id);
+    if(!conta) return;
+
+    const cargoAntigo = conta.cargo;
+    conta.cargo = novoCargo;
+    localStorage.setItem('listaContasOnline', JSON.stringify(listaContasOnline));
+
+    if(usuarioLogado && usuarioLogado.id === id) {
+        usuarioLogado.cargo = novoCargo;
+        document.getElementById('badge-cargo').textContent = novoCargo + ' (ID: ' + id + ')';
+    }
+
+    alert('Membro rebaixado com sucesso!\n' + conta.nome + ' foi rebaixado de ' + cargoAntigo + ' para ' + novoCargo + (motivo ? '\nMotivo: ' + motivo : ''));
+    fecharModalAcao();
+    renderHierarquia();
+    renderTabelaContas();
+}
+
+// ===== EXONERACAO (REMOVER DO CARGO) =====
+function confirmarExoneracao(id, nome) {
+    if(!temPermissaoEdicao()) { alert('Voce nao possui permissao para exonerar membros.'); return; }
+
+    const conta = listaContasOnline.find(c => c.id === id);
+    if(!conta) return;
+
+    // Impedir auto-exoneracao
+    if(usuarioLogado && usuarioLogado.id === id) {
+        alert('Voce nao pode se auto-exonerar.');
+        return;
+    }
+
+    const confirmacao = confirm(
+        'ATENCAO - EXONERACAO\n\n' +
+        'Voce esta prestes a EXONERAR o membro:\n' +
+        'Nome: ' + conta.nome + '\n' +
+        'ID: ' + conta.id + '\n' +
+        'Cargo: ' + conta.cargo + '\n\n' +
+        'Esta acao removera permanentemente este membro do sistema.\n' +
+        'Deseja continuar?'
+    );
+
+    if(!confirmacao) return;
+
+    const cargoRemovido = conta.cargo;
+    listaContasOnline = listaContasOnline.filter(c => c.id !== id);
+    localStorage.setItem('listaContasOnline', JSON.stringify(listaContasOnline));
+
+    alert('Membro exonerado com sucesso!\n' + nome + ' foi removido do cargo de ' + cargoRemovido);
+    renderHierarquia();
+    renderTabelaContas();
+}
+
+function fecharModalAcao() {
+    document.getElementById('modal-historico-conta').classList.remove('active');
+}
+
+// Inicializacao
+verificarSessaoAtiva();
+</script>
+</body>
+</html>
